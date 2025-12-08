@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { getUser } from "./usecases/get-user";
 import { updateUser } from "./usecases/update-user";
+import { deleteUser } from "./usecases/delete-user";
 
 export const getAllUsersController = async (
   request: FastifyRequest,
@@ -28,4 +29,13 @@ export const updateUserController = async (
     message: "User updated successfully",
     user: userInfo,
   });
+};
+
+export const deleteUserController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const user = request.user as { userId: number };
+  await deleteUser(user.userId);
+  reply.status(204).send();
 };

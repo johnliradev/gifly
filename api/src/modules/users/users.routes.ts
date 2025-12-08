@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   getAllUsersController,
   updateUserController,
+  deleteUserController,
 } from "./users.controllers";
 import { authenticate } from "@/http/middlewares/authenticate";
 import z from "zod";
@@ -76,5 +77,26 @@ export const usersRoutes = async (app: FastifyInstance) => {
       preHandler: [authenticate],
     },
     updateUserController
+  );
+  // Delete user (AUTHENTICATED)
+  app.delete(
+    "/users/me",
+    {
+      schema: {
+        description: "Delete user",
+        tags: ["Users"],
+        headers: z.object({
+          authorization: z
+            .string()
+            .min(1, "Token is required")
+            .startsWith("Bearer "),
+        }),
+        response: {
+          204: z.object({}),
+        },
+      },
+      preHandler: [authenticate],
+    },
+    deleteUserController
   );
 };
