@@ -3,7 +3,7 @@ import { getUser } from "./usecases/get-user";
 import { updateUser } from "./usecases/update-user";
 import { deleteUser } from "./usecases/delete-user";
 
-export const getAllUsersController = async (
+export const getUserController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {

@@ -1,16 +1,31 @@
 import { usersTable } from "@/db/schema";
-import { AppError } from "@/http/errors/AppError";
+import { AppError, ConflictError } from "@/http/errors/AppError";
 import { db } from "@/lib/drizzle";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export const updateUser = async (
   userId: number,
   name?: string,
   email?: string
 ) => {
+  const fieldsToUpdate: { name?: string; email?: string } = {};
+  if (name !== undefined) {
+    fieldsToUpdate.name = name;
+  }
+  if (email !== undefined) {
+    fieldsToUpdate.email = email;
+    const [userExists] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
+    if (userExists) {
+      throw new ConflictError("Email");
+    }
+  }
   const [user] = await db
     .update(usersTable)
-    .set({ name, email })
+    .set({ ...fieldsToUpdate, updatedAt: sql`now()` as any })
     .where(eq(usersTable.id, userId))
     .returning({
       id: usersTable.id,

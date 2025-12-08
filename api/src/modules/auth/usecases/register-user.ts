@@ -15,9 +15,9 @@ export const registerUser = async (
     .where(eq(usersTable.email, email))
     .limit(1);
   if (userExists) {
-    throw new ConflictError("User");
+    throw new ConflictError("Email");
   }
-  const passwordHash = await bcrypt.hashSync(password, 10);
+  const passwordHash = await bcrypt.hash(password, 10);
   const [user] = await db
     .insert(usersTable)
     .values({ name, email, password_hash: passwordHash })

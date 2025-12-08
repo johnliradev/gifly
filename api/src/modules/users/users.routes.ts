@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import {
-  getAllUsersController,
+  getUserController,
   updateUserController,
   deleteUserController,
 } from "./users.controllers";
@@ -8,7 +8,7 @@ import { authenticate } from "@/http/middlewares/authenticate";
 import z from "zod";
 
 export const usersRoutes = async (app: FastifyInstance) => {
-  // Get all users (AUTHENTICATED)
+  // Get user info (AUTHENTICATED)
   app.get(
     "/users/me",
     {
@@ -36,10 +36,10 @@ export const usersRoutes = async (app: FastifyInstance) => {
       },
       preHandler: [authenticate],
     },
-    getAllUsersController
+    getUserController
   );
   // Update user (AUTHENTICATED)
-  app.put(
+  app.patch(
     "/users/me",
     {
       schema: {
@@ -51,16 +51,23 @@ export const usersRoutes = async (app: FastifyInstance) => {
             .min(1, "Token is required")
             .startsWith("Bearer "),
         }),
-        body: z.object({
-          name: z
-            .string()
-            .min(3, { message: "Name must be at least 3 characters long" })
-            .max(255, {
-              message: "Name must be less than 255 characters long",
-            })
-            .optional(),
-          email: z.email({ message: "Invalid email address" }).optional(),
-        }),
+        body: z
+          .object({
+            name: z
+              .string()
+              .min(3, { message: "Name must be at least 3 characters long" })
+              .max(255, {
+                message: "Name must be less than 255 characters long",
+              })
+              .optional(),
+            email: z.email({ message: "Invalid email address" }).optional(),
+          })
+          .refine(
+            (data) => data.name !== undefined || data.email !== undefined,
+            {
+              message: "At least one field must be provided",
+            }
+          ),
         response: {
           200: z.object({
             message: z.string(),
