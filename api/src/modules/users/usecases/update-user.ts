@@ -3,20 +3,24 @@ import { AppError } from "@/http/errors/AppError";
 import { db } from "@/lib/drizzle";
 import { eq } from "drizzle-orm";
 
-export const getUser = async (userId: number) => {
+export const updateUser = async (
+  userId: number,
+  name?: string,
+  email?: string
+) => {
   const [user] = await db
-    .select({
+    .update(usersTable)
+    .set({ name, email })
+    .where(eq(usersTable.id, userId))
+    .returning({
       id: usersTable.id,
       name: usersTable.name,
       email: usersTable.email,
       createdAt: usersTable.createdAt,
       updatedAt: usersTable.updatedAt,
-    })
-    .from(usersTable)
-    .where(eq(usersTable.id, userId))
-    .limit(1);
+    });
   if (!user) {
-    throw new AppError("Failed to get user", 500, "INTERNAL_SERVER_ERROR");
+    throw new AppError("Failed to update user", 500, "USER_NOT_UPDATED");
   }
   return user;
 };
