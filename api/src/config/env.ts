@@ -1,4 +1,5 @@
 import z, { treeifyError } from "zod";
+import "dotenv/config";
 
 const _env = z.object({
   PORT: z.coerce.number().min(1, ".env is invalid: PORT not defined"),

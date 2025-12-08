@@ -3,14 +3,16 @@ services:
     image: postgres:16-alpine
     container_name: gifly-db
     restart: unless-stopped
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: gifly
+      POSTGRES_DB: gifly-db
     volumes:
       - ./db/data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d gifly"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d gifly-db"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,13 +22,13 @@ services:
     container_name: gifly-api
     restart: unless-stopped
     ports:
-      - "${API_PORT}:${API_PORT}"
+      - "${PORT}:${PORT}"
     volumes:
       - ./api/src:/app/src
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/gifly?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/gifly-db?schema=public
       HOST: ${HOST}
-      PORT: ${API_PORT}
+      PORT: ${PORT}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
       db:
