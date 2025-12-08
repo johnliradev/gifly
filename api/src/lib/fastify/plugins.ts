@@ -5,6 +5,7 @@ import scalarApiReference from "@scalar/fastify-api-reference";
 import fastifyJwt from "@fastify/jwt";
 import { jsonSchemaTransform } from "fastify-type-provider-zod";
 import { routes } from "../../http/routes";
+import { env } from "@/config/env";
 
 export const registerPlugins = async (server: FastifyInstance) => {
   await server.register(fastifyCors, {
@@ -24,7 +25,7 @@ export const registerPlugins = async (server: FastifyInstance) => {
   });
   await server.register(routes, { prefix: "/api" });
   await server.register(fastifyJwt, {
-    secret: "secret",
+    secret: env.JWT_SECRET,
   });
   await server.register(scalarApiReference, { routePrefix: "/api/docs" });
 };
