@@ -30,6 +30,7 @@ services:
       HOST: ${HOST}
       PORT: ${PORT}
       JWT_SECRET: ${JWT_SECRET}
+      CHOKIDAR_USEPOLLING: true
     depends_on:
       db:
         condition: service_healthy
