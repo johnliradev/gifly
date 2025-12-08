@@ -1,7 +1,11 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { usersRoutes } from "@/modules/users/users.routes";
+import { authRoutes } from "@/modules/auth/auth.routes";
 
 export const routes = async (app: FastifyInstance) => {
+  await usersRoutes(app);
+  await authRoutes(app);
   app.get(
     "/health",
     {
