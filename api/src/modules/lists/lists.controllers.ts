@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { createList } from "./usecases/create-list";
 import { getListsByUser } from "./usecases/get-lists-by-user";
 import { updateList } from "./usecases/update-list";
+import { deleteList } from "./usecases/delete-list";
 
 export const createListController = async (
   request: FastifyRequest,
@@ -50,5 +51,16 @@ export const updateListController = async (
   reply.status(200).send({
     message: "List updated successfully",
     list: list,
+  });
+};
+
+export const deleteListController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const { id } = request.params as { id: number };
+  const deletedList = await deleteList(id);
+  reply.status(200).send({
+    message: "List deleted successfully",
   });
 };

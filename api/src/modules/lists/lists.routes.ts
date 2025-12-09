@@ -1,13 +1,16 @@
 import { FastifyInstance } from "fastify";
 import {
   createListController,
+  deleteListController,
   getListsByUserController,
   updateListController,
 } from "./lists.controllers";
 import { z } from "zod";
 import { authenticate } from "@/http/middlewares/authenticate";
+import { ownerOfList } from "@/http/middlewares/owner-of-list";
 
 export const listsRoutes = async (app: FastifyInstance) => {
+  // Create a new list (AUTHENTICATED AND OWNER OF LIST)
   app.post(
     "/lists",
     {
@@ -42,6 +45,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
     },
     createListController
   );
+  // Get lists by user (AUTHENTICATED AND OWNER OF LIST)
   app.get(
     "/lists",
     {
@@ -74,6 +78,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
     },
     getListsByUserController
   );
+  // Update a list (AUTHENTICATED AND OWNER OF LIST)
   app.patch(
     "/lists/:id",
     {
@@ -112,8 +117,31 @@ export const listsRoutes = async (app: FastifyInstance) => {
           }),
         },
       },
-      preHandler: [authenticate],
+      preHandler: [authenticate, ownerOfList],
     },
     updateListController
+  );
+  // Delete a list (AUTHENTICATED AND OWNER OF LIST)
+  app.delete(
+    "/lists/:id",
+    {
+      schema: {
+        description: "Delete a list",
+        tags: ["Lists"],
+        headers: z.object({
+          authorization: z
+            .string()
+            .min(1, "Token is required")
+            .startsWith("Bearer "),
+        }),
+        response: {
+          200: z.object({
+            message: z.string(),
+          }),
+        },
+      },
+      preHandler: [authenticate, ownerOfList],
+    },
+    deleteListController
   );
 };
