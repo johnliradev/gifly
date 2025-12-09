@@ -19,19 +19,24 @@ export const usersTable = pgTable("users", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const visibilityEnum = pgEnum("visibility", ["public", "private"]);
-
-export const listsTable = pgTable("lists", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  visibility: visibilityEnum("visibility").notNull(),
-  user_id: integer("user_id")
-    .references(() => usersTable.id, { onDelete: "cascade" })
-    .notNull(),
-  is_default: boolean("is_default").default(false).notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+export const listsTable = pgTable(
+  "lists",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    is_public: boolean("is_public").default(false).notNull(),
+    user_id: integer("user_id")
+      .references(() => usersTable.id, { onDelete: "cascade" })
+      .notNull(),
+    is_default: boolean("is_default").default(false).notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("idx_lists_user_id").on(table.user_id),
+    index("idx_lists_is_public").on(table.is_public),
+  ]
+);
 
 export const priorityEnum = pgEnum("priority", ["LOW", "MEDIUM", "HIGH"]);
 export const statusEnum = pgEnum("status", [
