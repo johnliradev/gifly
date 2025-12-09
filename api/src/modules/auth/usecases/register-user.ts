@@ -36,14 +36,14 @@ export const registerUser = async (
       .insert(listsTable)
       .values({
         name: "My wishlist",
-        visibility: "public",
+        is_public: true,
         user_id: user.id,
         is_default: true,
       })
       .returning({
         id: listsTable.id,
         name: listsTable.name,
-        visibility: listsTable.visibility,
+        is_public: listsTable.is_public,
         user_id: listsTable.user_id,
         is_default: listsTable.is_default,
         createdAt: listsTable.createdAt,
@@ -65,7 +65,7 @@ export const registerUser = async (
       list: {
         id: list.id,
         name: list.name,
-        visibility: list.visibility,
+        is_public: list.is_public,
         user_id: list.user_id,
         is_default: list.is_default,
         createdAt: list.createdAt,

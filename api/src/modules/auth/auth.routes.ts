@@ -36,7 +36,7 @@ export const authRoutes = async (app: FastifyInstance) => {
             list: z.object({
               id: z.number(),
               name: z.string(),
-              visibility: z.string(),
+              is_public: z.boolean(),
               user_id: z.number(),
               is_default: z.boolean(),
               createdAt: z.coerce.string(),
