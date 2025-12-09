@@ -11,10 +11,11 @@ export const registerUserController = async (
     email: string;
     password: string;
   };
-  const user = await registerUser(name, email, password);
+  const { user, list } = await registerUser(name, email, password);
   reply.status(201).send({
     message: "User registered successfully",
-    userId: user,
+    user: user,
+    list: list,
   });
 };
 

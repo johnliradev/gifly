@@ -27,7 +27,20 @@ export const authRoutes = async (app: FastifyInstance) => {
         response: {
           201: z.object({
             message: z.string(),
-            userId: z.number(),
+            user: z.object({
+              id: z.number(),
+              name: z.string(),
+              email: z.string(),
+              createdAt: z.coerce.string(),
+            }),
+            list: z.object({
+              id: z.number(),
+              name: z.string(),
+              visibility: z.string(),
+              user_id: z.number(),
+              is_default: z.boolean(),
+              createdAt: z.coerce.string(),
+            }),
           }),
         },
       },
