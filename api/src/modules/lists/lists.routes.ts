@@ -4,6 +4,7 @@ import {
   deleteListController,
   getListByIdController,
   getListsByUserController,
+  getPublicListController,
   updateListController,
 } from "./lists.controllers";
 import { z } from "zod";
@@ -86,6 +87,9 @@ export const listsRoutes = async (app: FastifyInstance) => {
       schema: {
         description: "Update a list",
         tags: ["Lists"],
+        params: z.object({
+          id: z.string(),
+        }),
         headers: z.object({
           authorization: z
             .string()
@@ -129,6 +133,9 @@ export const listsRoutes = async (app: FastifyInstance) => {
       schema: {
         description: "Delete a list",
         tags: ["Lists"],
+        params: z.object({
+          id: z.string(),
+        }),
         headers: z.object({
           authorization: z
             .string()
@@ -152,6 +159,9 @@ export const listsRoutes = async (app: FastifyInstance) => {
       schema: {
         description: "Get a list by id",
         tags: ["Lists"],
+        params: z.object({
+          id: z.string(),
+        }),
         headers: z.object({
           authorization: z
             .string()
@@ -176,5 +186,40 @@ export const listsRoutes = async (app: FastifyInstance) => {
       preHandler: [authenticate, ownerOfList],
     },
     getListByIdController
+  );
+  // Get public lists (AUTHENTICATED)
+  app.get(
+    "/lists/public/:id",
+    {
+      schema: {
+        description: "Get a public list by id",
+        tags: ["Lists"],
+        params: z.object({
+          id: z.string(),
+        }),
+        headers: z.object({
+          authorization: z
+            .string()
+            .min(1, "Token is required")
+            .startsWith("Bearer "),
+        }),
+        response: {
+          200: z.object({
+            message: z.string(),
+            list: z.object({
+              id: z.number(),
+              name: z.string(),
+              is_public: z.boolean(),
+              user_id: z.number(),
+              is_default: z.boolean(),
+              createdAt: z.coerce.string(),
+              updatedAt: z.coerce.string(),
+            }),
+          }),
+        },
+      },
+      preHandler: [authenticate],
+    },
+    getPublicListController
   );
 };

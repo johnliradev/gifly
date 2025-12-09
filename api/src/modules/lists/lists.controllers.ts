@@ -4,6 +4,7 @@ import { getListsByUser } from "./usecases/get-lists-by-user";
 import { updateList } from "./usecases/update-list";
 import { deleteList } from "./usecases/delete-list";
 import { getListById } from "./usecases/get-list-by-id";
+import { getPublicList } from "./usecases/get-public-list";
 export const createListController = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -80,6 +81,26 @@ export const getListByIdController = async (
       user_id: list.user_id,
       is_default: list.is_default,
       createdAt: list.createdAt,
+    },
+  });
+};
+
+export const getPublicListController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const { id } = request.params as { id: number };
+  const list = await getPublicList(id);
+  reply.status(200).send({
+    message: "Public list retrieved successfully",
+    list: {
+      id: list.id,
+      name: list.name,
+      is_public: list.is_public,
+      user_id: list.user_id,
+      is_default: list.is_default,
+      createdAt: list.createdAt,
+      updatedAt: list.updatedAt,
     },
   });
 };
