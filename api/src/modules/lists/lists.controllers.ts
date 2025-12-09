@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { createList } from "./usecases/create-list";
 import { getListsByUser } from "./usecases/get-lists-by-user";
+import { updateList } from "./usecases/update-list";
 
 export const createListController = async (
   request: FastifyRequest,
@@ -33,5 +34,21 @@ export const getListsByUserController = async (
   const lists = await getListsByUser(userId);
   reply.status(200).send({
     lists: lists,
+  });
+};
+
+export const updateListController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const { id } = request.params as { id: number };
+  const { name, is_public } = request.body as {
+    name?: string;
+    is_public?: boolean;
+  };
+  const list = await updateList(id, name, is_public);
+  reply.status(200).send({
+    message: "List updated successfully",
+    list: list,
   });
 };
