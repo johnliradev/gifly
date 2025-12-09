@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
   createListController,
   deleteListController,
+  getListByIdController,
   getListsByUserController,
   updateListController,
 } from "./lists.controllers";
@@ -143,5 +144,37 @@ export const listsRoutes = async (app: FastifyInstance) => {
       preHandler: [authenticate, ownerOfList],
     },
     deleteListController
+  );
+  // Get a list by id (AUTHENTICATED AND OWNER OF LIST)
+  app.get(
+    "/lists/:id",
+    {
+      schema: {
+        description: "Get a list by id",
+        tags: ["Lists"],
+        headers: z.object({
+          authorization: z
+            .string()
+            .min(1, "Token is required")
+            .startsWith("Bearer "),
+        }),
+        response: {
+          200: z.object({
+            message: z.string(),
+            list: z.object({
+              id: z.number(),
+              name: z.string(),
+              is_public: z.boolean(),
+              user_id: z.number(),
+              is_default: z.boolean(),
+              createdAt: z.coerce.string(),
+              updatedAt: z.coerce.string(),
+            }),
+          }),
+        },
+      },
+      preHandler: [authenticate, ownerOfList],
+    },
+    getListByIdController
   );
 };
