@@ -3,11 +3,13 @@ import { z } from "zod";
 import { usersRoutes } from "@/modules/users/users.routes";
 import { authRoutes } from "@/modules/auth/auth.routes";
 import { listsRoutes } from "@/modules/lists/lists.routes";
+import { itemsRoutes } from "@/modules/items/items.routes";
 
 export const routes = async (app: FastifyInstance) => {
   await usersRoutes(app);
   await authRoutes(app);
   await listsRoutes(app);
+  await itemsRoutes(app);
   app.get(
     "/health",
     {
