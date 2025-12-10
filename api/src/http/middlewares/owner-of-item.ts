@@ -7,13 +7,18 @@ import { NotFoundError, ForbiddenError } from "../errors/AppError";
 
 export const ownerOfItem = async (request: FastifyRequest) => {
   const { userId } = request.user as { userId: number };
-  const { id } = request.params as { id: string };
+  const params = request.params as { id?: string; itemId?: string };
+  const itemId = params.itemId || params.id;
+
+  if (!itemId) {
+    throw new NotFoundError("Item");
+  }
 
   const [result] = await db
     .select({ user_id: listsTable.user_id })
     .from(itemsTable)
     .innerJoin(listsTable, eq(itemsTable.list_id, listsTable.id))
-    .where(eq(itemsTable.id, Number(id)));
+    .where(eq(itemsTable.id, Number(itemId)));
 
   if (!result) {
     throw new NotFoundError("Item");
