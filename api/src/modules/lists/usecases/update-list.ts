@@ -22,6 +22,7 @@ export const updateList = async (
     .returning({
       id: listsTable.id,
       name: listsTable.name,
+      share_token: listsTable.share_token,
       is_public: listsTable.is_public,
       user_id: listsTable.user_id,
       is_default: listsTable.is_default,
@@ -34,6 +35,7 @@ export const updateList = async (
   return {
     id: list.id,
     name: list.name,
+    share_token: list.share_token,
     is_public: list.is_public,
     user_id: list.user_id,
     is_default: list.is_default,

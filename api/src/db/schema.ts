@@ -24,6 +24,7 @@ export const listsTable = pgTable(
   {
     id: serial("id").primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
+    share_token: varchar("share_token", { length: 32 }).notNull().unique(),
     is_public: boolean("is_public").default(false).notNull(),
     user_id: integer("user_id")
       .references(() => usersTable.id, { onDelete: "cascade" })
@@ -35,6 +36,7 @@ export const listsTable = pgTable(
   (table) => [
     index("idx_lists_user_id").on(table.user_id),
     index("idx_lists_is_public").on(table.is_public),
+    index("idx_lists_share_token").on(table.share_token),
   ]
 );
 

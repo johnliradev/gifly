@@ -4,7 +4,7 @@ import {
   deleteListController,
   getListByIdController,
   getListsByUserController,
-  getPublicListController,
+  getSharedListController,
   updateListController,
 } from "./lists.controllers";
 import { z } from "zod";
@@ -35,6 +35,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
             list: z.object({
               id: z.number(),
               name: z.string(),
+              share_token: z.string(),
               is_public: z.boolean(),
               user_id: z.number(),
               is_default: z.boolean(),
@@ -66,6 +67,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
               z.object({
                 id: z.number(),
                 name: z.string(),
+                share_token: z.string(),
                 is_public: z.boolean(),
                 user_id: z.number(),
                 is_default: z.boolean(),
@@ -113,6 +115,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
             list: z.object({
               id: z.number(),
               name: z.string(),
+              share_token: z.string(),
               is_public: z.boolean(),
               user_id: z.number(),
               is_default: z.boolean(),
@@ -174,6 +177,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
             list: z.object({
               id: z.number(),
               name: z.string(),
+              share_token: z.string(),
               is_public: z.boolean(),
               user_id: z.number(),
               is_default: z.boolean(),
@@ -187,15 +191,15 @@ export const listsRoutes = async (app: FastifyInstance) => {
     },
     getListByIdController
   );
-  // Get public lists (PUBLIC)
+  // Get shared list by token (PUBLIC - no auth required)
   app.get(
-    "/lists/public/:id",
+    "/share/:token",
     {
       schema: {
-        description: "Get a public list by id",
-        tags: ["Lists"],
+        description: "Get a shared list by token (public access)",
+        tags: ["Share"],
         params: z.object({
-          id: z.string(),
+          token: z.string().length(32, "Invalid share token"),
         }),
         response: {
           200: z.object({
@@ -203,16 +207,34 @@ export const listsRoutes = async (app: FastifyInstance) => {
             list: z.object({
               id: z.number(),
               name: z.string(),
+              share_token: z.string(),
               is_public: z.boolean(),
-              user_id: z.number(),
-              is_default: z.boolean(),
+              owner_name: z.string(),
               createdAt: z.coerce.string(),
               updatedAt: z.coerce.string(),
+              items: z.array(
+                z.object({
+                  id: z.number(),
+                  name: z.string(),
+                  url: z.string().nullable(),
+                  description: z.string().nullable(),
+                  estimated_price: z.string().nullable(),
+                  image_url: z.string().nullable(),
+                  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+                  status: z.enum([
+                    "PURCHASED",
+                    "DESIRED",
+                    "GIFTED",
+                    "RESERVED",
+                    "ARCHIVED",
+                  ]),
+                })
+              ),
             }),
           }),
         },
       },
     },
-    getPublicListController
+    getSharedListController
   );
 };

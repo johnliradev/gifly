@@ -4,7 +4,7 @@ import { getListsByUser } from "./usecases/get-lists-by-user";
 import { updateList } from "./usecases/update-list";
 import { deleteList } from "./usecases/delete-list";
 import { getListById } from "./usecases/get-list-by-id";
-import { getPublicList } from "./usecases/get-public-list";
+import { getSharedList } from "./usecases/get-public-list";
 export const createListController = async (
   request: FastifyRequest,
   reply: FastifyReply
@@ -20,6 +20,7 @@ export const createListController = async (
     list: {
       id: list.id,
       name: list.name,
+      share_token: list.share_token,
       is_public: list.is_public,
       user_id: list.user_id,
       is_default: list.is_default,
@@ -74,33 +75,18 @@ export const getListByIdController = async (
   const list = await getListById(id);
   reply.status(200).send({
     message: "List retrieved successfully",
-    list: {
-      id: list.id,
-      name: list.name,
-      is_public: list.is_public,
-      user_id: list.user_id,
-      is_default: list.is_default,
-      createdAt: list.createdAt,
-    },
+    list,
   });
 };
 
-export const getPublicListController = async (
+export const getSharedListController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const { id } = request.params as { id: number };
-  const list = await getPublicList(id);
+  const { token } = request.params as { token: string };
+  const list = await getSharedList(token);
   reply.status(200).send({
-    message: "Public list retrieved successfully",
-    list: {
-      id: list.id,
-      name: list.name,
-      is_public: list.is_public,
-      user_id: list.user_id,
-      is_default: list.is_default,
-      createdAt: list.createdAt,
-      updatedAt: list.updatedAt,
-    },
+    message: "Shared list retrieved successfully",
+    list,
   });
 };

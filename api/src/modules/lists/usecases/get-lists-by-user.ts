@@ -8,6 +8,7 @@ export const getListsByUser = async (userId: number) => {
     .select({
       id: listsTable.id,
       name: listsTable.name,
+      share_token: listsTable.share_token,
       is_public: listsTable.is_public,
       user_id: listsTable.user_id,
       is_default: listsTable.is_default,
