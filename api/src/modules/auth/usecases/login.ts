@@ -18,9 +18,12 @@ export const login = async (email: string, password: string) => {
   if (!passwordMatch) {
     throw new ValidationError("Invalid email or password");
   }
-  const token = await server.jwt.sign({
-    userId: user.id,
-  });
+  const token = await server.jwt.sign(
+    {
+      userId: user.id,
+    },
+    { expiresIn: "24h" }
+  );
   return {
     token,
     user: {

@@ -187,7 +187,7 @@ export const listsRoutes = async (app: FastifyInstance) => {
     },
     getListByIdController
   );
-  // Get public lists (AUTHENTICATED)
+  // Get public lists (PUBLIC)
   app.get(
     "/lists/public/:id",
     {
@@ -196,12 +196,6 @@ export const listsRoutes = async (app: FastifyInstance) => {
         tags: ["Lists"],
         params: z.object({
           id: z.string(),
-        }),
-        headers: z.object({
-          authorization: z
-            .string()
-            .min(1, "Token is required")
-            .startsWith("Bearer "),
         }),
         response: {
           200: z.object({
@@ -218,7 +212,6 @@ export const listsRoutes = async (app: FastifyInstance) => {
           }),
         },
       },
-      preHandler: [authenticate],
     },
     getPublicListController
   );

@@ -13,6 +13,9 @@ export const registerPlugins = async (server: FastifyInstance) => {
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   });
+  await server.register(fastifyJwt, {
+    secret: env.JWT_SECRET,
+  });
   await server.register(fastifySwagger, {
     openapi: {
       info: {
@@ -24,8 +27,5 @@ export const registerPlugins = async (server: FastifyInstance) => {
     transform: jsonSchemaTransform,
   });
   await server.register(routes, { prefix: "/api" });
-  await server.register(fastifyJwt, {
-    secret: env.JWT_SECRET,
-  });
   await server.register(scalarApiReference, { routePrefix: "/api/docs" });
 };
