@@ -6,6 +6,8 @@ const _env = z.object({
   HOST: z.string().default("0.0.0.0"),
   DATABASE_URL: z.url(".env is invalid: DATABASE_URL not defined"),
   JWT_SECRET: z.string().min(1, ".env is invalid: JWT_SECRET not defined"),
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
+  FRONTEND_URL: z.url(".env is invalid: FRONTEND_URL not defined"),
 });
 
 function validateEnv() {

@@ -1,6 +1,7 @@
 import { login } from "./usecases/login";
 import { registerUser } from "./usecases/register-user";
 import { FastifyRequest, FastifyReply } from "fastify";
+import { env } from "@/config/env";
 
 export const registerUserController = async (
   request: FastifyRequest,
@@ -27,10 +28,12 @@ export const loginController = async (
     email: string;
     password: string;
   };
-  const user = await login(email, password);
-  reply.status(200).send({
-    message: "Login successful",
-    token: user.token,
-    user: user.user,
+  const response = await login(email, password);
+  reply.setCookie("token", response.token, {
+    httpOnly: true,
+    maxAge: 24 * 60 * 60,
+    sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+    secure: env.NODE_ENV === "production",
   });
+  reply.status(200).send({ message: "Login successful", user: response.user });
 };
